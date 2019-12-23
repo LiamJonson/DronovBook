@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+
+from .forms import BbForm
 from .models import Rubric
 from .models import Bb
 
@@ -16,3 +20,14 @@ def by_rubric(request, rubric_id):
     current_rubric = Rubric.objects.get(pk=rubric_id)
     context = {'bbs': bbs, 'rubrics': rubrics, 'current_rubric': current_rubric}
     return render(request, 'bboard/by_rubric.html', context)
+
+
+class BbCreateView(CreateView):
+    template_name = 'bboard/create.html'#путь к файлу шаблона,для вывод стр
+    form_class = BbForm #класс формы
+    success_url = reverse_lazy('index') #имя маршрута и значения url-параметров
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rubrics'] = Rubric.objects.all()
+        return context
